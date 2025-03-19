@@ -27,18 +27,20 @@ For instance:
 # Set a specific seed for reproducibility
 set.seed(1)
 # Define number of SNPs, sample size, etc.
-#  P: number of SNPs
-P <- 100
+#  P: number of genome-wide common variants
+P <- 6948674
+# P0: number of causal variants:
+P0 <- 10000
 #  N: number of subjects
 N <- 2000
 #  J: maximum of expected measurements per person among N individuals
 J <- 6
 # theta: column vector of variance components = (sigma^2_alpha, sigma^2_eta, sigma^2_b0, sigma^2_b1, sigma^2_e)
-theta = c(0.005, 0.002, 0.5, 0.2, 0.2)
-# xi: coefficients of fixed effects beta_0, beta_1, mu_alpha, mu_eta
-xi = c(0.5, 0.05, 0, 0)
+theta = c(2, 2, 2, 2, 0.1)
+# beta: coefficients of fixed effects beta_0 and beta_1
+beta = c(-0.2118, 0.8415)
 # Call function to generate data0 with a list of vectors: n,Z,t,y
-data0 <- generate_data(P = P, N = N, J = J, theta, xi)
+data0 <- generate_data(P = P, N = N, J = J, theta, beta)
 ####################################################################################################################
 
 ################### For real data analysis with known data0 as a list of column vectors n, Z, t,y ##################
@@ -61,9 +63,8 @@ where data0 has to be structured as a list of vectors n, Z, t, y. data has to be
 - t: A sum(n) x 1 column vector of the time variable.
 - y: A sum(n) x 1 column vector of the longitudinal response.
 - A: A sum(n) x 2 covariate matrix of fixed effects beta_0 and beta_1.
-- S: A sum(n) x 4 covariate matrix of fixed effects xi = (beta_0, beta1, mu_alpha, mu_eta).
-- G: A N x N matrix as P times genetic relationship matrix.
-- W: A sum(n) x (2P+2N) covariate matrix of random effects.
+- G: A N x N genetic relationship matrix using genome-wide variants.
+- G0: A N x N genetic relationship matrix using 
 - H: composite matrix for AI matrix and DL matrix.
 
 # Usage Notes
@@ -72,7 +73,7 @@ where data0 has to be structured as a list of vectors n, Z, t, y. data has to be
 scale its range between 0 and 1. In specific, time variable is calculated as the age at each screening visit, adjusted by subtracting
 54 and dividing by 30 for PLCO prostate cancer dataset) to control the scale of time variable before applying our functions. 
 3. Our calculations assume there is unbalanced longitudinal data structure.
-4. For `sim_II.R` and `sim_II_genetic_effects.R`, both of them are for simulation studies for a specific scenario with 1,000 repetitions, we conducted them on Biowulf by setting value of a from 1 to 1000.  
+4. For `sim_I_REHE_N_2000.R`, `sim_I_AI_REML_N_2000.R`, `sim_I_REHE_N_15260.R`, and `sim_I_AI_REML_N_15260.R`, both of them are for simulation studies for a specific scenario with 1,000 repetitions, we conducted them on Biowulf by setting value of a from 1 to 1000.  
    
 # References
 Lynch, Michael and Walsh, Bruce (1998) Genetics and analysis of quantitative traits. Sinauer Sunderland. 
