@@ -64,7 +64,7 @@ where data0 has to be structured as a list of vectors n, Z, t, y. data has to be
 - y: A sum(n) x 1 column vector of the longitudinal response.
 - A: A sum(n) x 2 covariate matrix of fixed effects beta_0 and beta_1.
 - G: A N x N genetic relationship matrix using genome-wide variants.
-- G0: A N x N genetic relationship matrix using 
+- G0: A N x N genetic relationship matrix using causal variants.
 - H: composite matrix for AI matrix and DL matrix.
 
 # Usage Notes
