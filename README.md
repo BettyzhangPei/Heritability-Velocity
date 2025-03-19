@@ -18,8 +18,8 @@ For real data analysis, we use `PLCO.R`. Among `PLCO.R`:
 - `generate_data` function
 - `generate_information` function
 - `AI-ReML` function
-The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, Z, t and y. 
-The `generate_information` function provides a list of obaserved data and required matrices: n, Z, t, y, A, S, G, W, and H.
+The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
+The `generate_information` function provides a list of obaserved data and required matrices: n, Z, Z0, t, y, A, G, G0, and H.
 The `AI-ReML` function provides estimates for variance components in a linear mixed model by integrating genetic effects in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset. 
 For instance: 
 ```r
@@ -43,8 +43,8 @@ beta = c(-0.2118, 0.8415)
 data0 <- generate_data(P = P, P0 = P0, N = N, J = J, theta, beta)
 ####################################################################################################################
 
-################### For real data analysis with known data0 as a list of column vectors n,G,G0,t,y ##################
-# call function to obtain information n,G,G0,t,y, and matrices A and H based on known n,G,G0,t,y
+################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y ##################
+# call function to obtain information n, G, G0, t, y, and matrices A and H based on known n, G, G0, t, y
 data = generate_information(n = data0$n, G = data0$G, G0 = data0$G0,  t= data0$t, y=data0$y)
 # Perform AI-ReML algorithm for estimation of unknown variance parameters, two heritability metrics and their standard errors 
 # For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm
@@ -57,7 +57,7 @@ est.par= as.matrix(result$par, ncol=1)
 # Estimated two heritability metrics and their standard errors 
 ####################################################################################################################
 ```
-where data0 has to be structured as a list of vectors n, G, G0, t, y. data has to be structured as a list of vectors and matrices n, Z,Z0, t, y, A, G, G0, and H. 
+where data0 has to be structured as a list of vectors n, G, G0, t, y. data has to be structured as a list of vectors and matrices n, Z, Z0, t, y, A, G, G0, and H. 
 - n: A N x 1 column vector represents total number of measurements for each subject. 
 - Z: A N x P matrix with standardized genotypic values based on genome-wide common variants
 - Z0 : A N x P0 matrix with standardized genotypic values based on causal variants
