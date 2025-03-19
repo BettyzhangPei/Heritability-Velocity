@@ -27,24 +27,24 @@ For instance:
 # Set a specific seed for reproducibility
 set.seed(1)
 # Define number of SNPs, sample size, etc.
-#  P: number of genome-wide common variants
+#  P represents the number of genome-wide common variants
 P <- 6948674
-# P0: number of causal variants:
+# P0 represents the number of causal variants:
 P0 <- 10000
-#  N: number of subjects
+#  N denotes the number of subjects
 N <- 2000
-#  J: maximum of expected measurements per person among N individuals
+#  J denotes maximum of expected measurements per subjects among N subjects
 J <- 6
-# theta: column vector of variance components = (sigma^2_alpha, sigma^2_eta, sigma^2_b0, sigma^2_b1, sigma^2_e)
+# theta: column vector of variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e)
 theta = c(2, 2, 2, 2, 0.1)
-# beta: coefficients of fixed effects beta_0 and beta_1
+# beta: coefficients of fixed effects (beta_0 and beta_1)
 beta = c(-0.2118, 0.8415)
 # Call function to generate data0 with a list of vectors: n,Z,t,y
-data0 <- generate_data(P = P, N = N, J = J, theta, beta)
+data0 <- generate_data(P = P, P0= P0, N = N, J = J, theta, beta)
 ####################################################################################################################
 
-################### For real data analysis with known data0 as a list of column vectors n, Z, t,y ##################
-# call function to obtain information n,Z,t,y, and matrices A, S, G, W,H based on known n,Z,t,y 
+################### For real data analysis with known data0 as a list of column vectors n,G,G0,t,y ##################
+# call function to obtain information n,G,G0,t,y, and matrices A and H based on known n,G,G0,t,y
 data = generate_information(n= data0$n, Z= data0$Z, t= data0$t, y=data0$y)
 # Perform AI-ReML algorithm for estimation of unknown variance parameters
 # For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm
