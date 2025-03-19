@@ -29,7 +29,7 @@ set.seed(1)
 # Define number of genome-wide common variants, number of causal variants, sample size etc.
 #  P represents the number of genome-wide common variants
 P <- 6948674
-# P0 represents the number of causal variants:
+# P0 represents the number of causal variants
 P0 <- 10000
 #  N denotes the number of subjects
 N <- 2000
@@ -39,27 +39,28 @@ J <- 6
 theta = c(2, 2, 2, 2, 0.1)
 # beta: coefficients of fixed effects (beta_0 and beta_1)
 beta = c(-0.2118, 0.8415)
-# Call function to generate data0 with a list of vectors: n,Z,t,y
-data0 <- generate_data(P = P, P0= P0, N = N, J = J, theta, beta)
+# Call function to generate data0 with a list of vectors: n, G, G0, t, y.
+data0 <- generate_data(P = P, P0 = P0, N = N, J = J, theta, beta)
 ####################################################################################################################
 
 ################### For real data analysis with known data0 as a list of column vectors n,G,G0,t,y ##################
 # call function to obtain information n,G,G0,t,y, and matrices A and H based on known n,G,G0,t,y
-data = generate_information(n= data0$n, Z= data0$Z, t= data0$t, y=data0$y)
-# Perform AI-ReML algorithm for estimation of unknown variance parameters
+data = generate_information(n = data0$n, G = data0$G, G0 = data0$G0,  t= data0$t, y=data0$y)
+# Perform AI-ReML algorithm for estimation of unknown variance parameters, two heritability metrics and their standard errors 
 # For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm
 initial.par = theta
 result <- AI_ReML(par = initial.par, l_ReML,  maxit = 1000, maxtol = 1e-4, data = data, f_V, AI_DL, woodbury_inverse_V)
 # print results from AI-ReML algorithm
 print(result)
-# Estimated variance components = (sigma^2_alpha, sigma^2_eta, sigma^2_b0, sigma^2_b1, sigma^2_e)
+# Estimated variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e)
 est.par= as.matrix(result$par, ncol=1)
 # Estimated two heritability metrics and their standard errors 
 ####################################################################################################################
 ```
-where data0 has to be structured as a list of vectors n, Z, t, y. data has to be structured as a list of vectors and matrices n, Z, t, y, A, S, G, W and H. 
+where data0 has to be structured as a list of vectors n, G, G0, t, y. data has to be structured as a list of vectors and matrices n, Z,Z0, t, y, A, G, G0, and H. 
 - n: A N x 1 column vector represents total number of measurements for each subject. 
-- Z: A N x P matrix with standardized genotypic values.
+- Z: A N x P matrix with standardized genotypic values based on genome-wide common variants
+- Z0 : A N x P0 matrix with standardized genotypic values based on causal variants
 - t: A sum(n) x 1 column vector of the time variable.
 - y: A sum(n) x 1 column vector of the longitudinal response.
 - A: A sum(n) x 2 covariate matrix of fixed effects beta_0 and beta_1.
