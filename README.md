@@ -26,7 +26,7 @@ For instance:
 ###################################################################################################################
 # Set a specific seed for reproducibility
 set.seed(1)
-# Define number of SNPs, sample size, etc.
+# Define number of genome-wide common variants, number of causal variants, sample size etc.
 #  P represents the number of genome-wide common variants
 P <- 6948674
 # P0 represents the number of causal variants:
