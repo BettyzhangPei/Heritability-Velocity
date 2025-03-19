@@ -1,4 +1,5 @@
-# Heritability-Velocity: Estimating the Heritability of Velocity in a Longitudinal Phenotypic Trait: Genetic Insights into PSA Velocity in Prostate Cancer-Free Individuals
+# Heritability-Velocity: 
+Estimating the Heritability of Velocity in a Longitudinal Phenotypic Trait: Genetic Insights into PSA Velocity in Prostate Cancer-Free Individuals
 
 Approaches for heritability analysis typically focus on analyzing cross-sectional phenotype, with less attention given to longitudinal phenotypes. This R code introduces a novel mixed model that incorporates genome-wide common variants to disentangle joint genetic effects on both baseline and velocity in a longitudinal phenpytpe. We employ two approaches: the average information restricted maximum likelihood (AI-REML) algorithm and the restricted Haseman-Elston (REHE) regression method. 
 
