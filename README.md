@@ -50,7 +50,7 @@ data = generate_information(n = data0$n, G = data0$G, G0 = data0$G0,  t= data0$t
 # Perform AI-ReML algorithm for estimation of unknown variance parameters, two heritability metrics and their standard errors 
 # For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm
 initial.par = theta
-result <- AI_ReML(par = initial.par, l_ReML,  maxit = 1000, maxtol = 1e-4, data = data, f_V, AI_DL)
+result <- AI_ReML(par = initial.par, l_REML,  maxit = 1000, maxtol = 1e-4, data = data, f_V, AI_DL)
 # print results from AI-ReML algorithm
 print(result)
 # Estimated variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e)
