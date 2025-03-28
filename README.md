@@ -18,10 +18,10 @@ Building on the proposed mixed model with jointly individual-level genetic effec
 For real data analysis, we use `PLCO.R`. Among `PLCO.R`: 
 - `generate_data` function
 - `generate_information` function
-- `AI-ReML` function
+- `final.result` function
 The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
-The `generate_information` function provides a list of obaserved data and required matrices: n, Z, Z0, t, y, A, G, G0, and H.
-The `AI-ReML` function provides estimates for variance components in a linear mixed model by integrating genetic effects in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset. 
+The `generate_information` function provides a list of obaserved data and required matrices: G=G, t=t, n=n, y=y, H=H, A=A. 
+The `final.result.AI.ReML` function provides estimates for variance components, two heritability metrics and their variances in a linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset.
 For instance: 
 ```r
 ###################################################################################################################
@@ -29,9 +29,9 @@ For instance:
 set.seed(1)
 # Define number of genome-wide common variants, number of causal variants, sample size etc.
 #  P represents the number of genome-wide common variants
-P <- 6948674
+P <- 10000
 # P0 represents the number of causal variants
-P0 <- 10000
+P0 <- 1000
 #  N denotes the number of subjects
 N <- 2000
 #  J denotes maximum of expected measurements per subjects among N subjects
@@ -45,29 +45,31 @@ data0 <- generate_data(P = P, P0 = P0, N = N, J = J, theta, beta)
 ####################################################################################################################
 
 ################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y ##################
-# call function to obtain information n, G, G0, t, y, and matrices A and H based on known n, G, G0, t, y
+# call function to obtain information G, t, n, y, H, A, and matrices A and H based on known n, G, t, y
 data = generate_information(n = data0$n, G = data0$G, G0 = data0$G0,  t= data0$t, y=data0$y)
 # Perform AI-ReML algorithm for estimation of unknown variance parameters, two heritability metrics and their standard errors 
-# For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm
-initial.par = theta
-result <- AI_ReML(par = initial.par, l_REML,  maxit = 1000, maxtol = 1e-4, data = data, f_V, AI_DL)
-# print results from AI-ReML algorithm
-print(result)
-# Estimated variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e)
-est.par= as.matrix(result$par, ncol=1)
-# Estimated two heritability metrics and their standard errors 
+# For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm. For instance, innitial.par = theta
+# Call function to obtain estimated variance components, two heritability metrics and their variances. 
+final_result_AI_ReML <- final.result.AI.ReML(initial.par=theta, data, AI_ReML, f_V, AI_DL)
+print(final_result_AI_ReML)
+# Estimated variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e) and their variances
+# Estimated two heritability metrics and their variances
 ####################################################################################################################
 ```
-where data0 has to be structured as a list of vectors n, G, G0, t, y. data has to be structured as a list of vectors and matrices n, Z, Z0, t, y, A, G, G0, and H. 
+where data0 has to be structured as a list of vectors n, G, G0, t, y. 
 - n: A N x 1 column vector represents total number of measurements for each subject. 
-- Z: A N x P matrix with standardized genotypic values based on genome-wide common variants
-- Z0: A N x P0 matrix with standardized genotypic values based on causal variants
+- G: A N x N genetic relationship matrix based on genome-wide common variants.
+- G0: A N x N genetic relationship matrix based on causal variants.
 - t: A sum(n) x 1 column vector of the time variable.
 - y: A sum(n) x 1 column vector of the longitudinal response.
-- A: A sum(n) x 2 covariate matrix of fixed effects beta_0 and beta_1.
-- G: A N x N genetic relationship matrix, calculated by genome-wide common variants.
-- G0: A N x N genetic relationship matrix, calculated by causal variants.
-- H: composite matrix for AI matrix and DL matrix.
+
+Moreover, data will to be structured as a list of vectors and matrices G, t, n, y, H, A. 
+- G: A N x N genetic relationship matrix based on genome-wide common variants.
+- t: A sum(n) x 1 column vector of the time variable.
+- n: A N x 1 column vector represents total number of measurements for each subject.
+- y: A sum(n) x 1 column vector of the longitudinal response
+- H: composite matrix for AI matrix and DL matrix in the iteration process of AI-ReML algorithm.
+- A: A sum(n) x 2 covariate matrix for fixed effects
 
 # Usage Notes
 1. We recommend transforming response (e.g., using a log transformation) to approximate a normal distribution before applying our functions.
