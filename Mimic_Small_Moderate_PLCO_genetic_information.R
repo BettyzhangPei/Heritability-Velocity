@@ -1,3 +1,6 @@
+# For small-to-moderate studies, we can directly utilize the AI-ReML algorithm into the real dataset
+
+
 final.result.AI.ReML <- function(initial.par, data, AI_ReML, f_V, AI_DL)
 {
   ### initial.par : the input of variance components for estimating variance components via AI-REML algorithm 
