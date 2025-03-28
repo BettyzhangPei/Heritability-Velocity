@@ -15,12 +15,12 @@ Building on the proposed mixed model with jointly individual-level genetic effec
 
 
 # Usage Examples
-For real data analysis, we use `PLCO.R`. Among `PLCO.R`: 
+For real data analysis under small-to-moderate studies via AI-ReML algorithm,  we use `Mimic_Small_Moderate_PLCO_genetic_information.R`. Among `Mimic_Small_Moderate_PLCO_genetic_information.R`: 
 - `generate_data` function
 - `generate_information` function
-- `final.result` function
+- `final.result.AI.ReML` function
 The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
-The `generate_information` function provides a list of obaserved data and required matrices: G=G, t=t, n=n, y=y, H=H, A=A. 
+The `generate_information` function provides a list of obaserved data and required matrices: G, t, n, y, H, A. 
 The `final.result.AI.ReML` function provides estimates for variance components, two heritability metrics and their variances in a linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset.
 For instance: 
 ```r
