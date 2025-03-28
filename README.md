@@ -52,7 +52,7 @@ data = generate_information(n = data0$n, G = data0$G, G0 = data0$G0,  t= data0$t
 # Call function to obtain estimated variance components, two heritability metrics and their variances. 
 final_result_AI_ReML <- final.result.AI.ReML(initial.par=theta, data, AI_ReML, f_V, AI_DL)
 print(final_result_AI_ReML)
-# Estimated variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e) and their variances
+# Estimated variance components (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e) and their variances
 # Estimated two heritability metrics and their variances
 ####################################################################################################################
 ```
