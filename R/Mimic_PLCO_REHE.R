@@ -1,8 +1,12 @@
-# KKT optimization process for minimizing the convex quadratic function
-#install.packages("quadprog")
-library(quadprog)
-library(Rcpp)
 
+#install.packages("quadprog")
+library(quadprog)  # KKT optimization process for minimizing the convex quadratic function
+
+library(Rcpp)
+# Access the C++ Code:
+# sourceCpp("~/Desktop/C++/sumS3.cpp")
+# sourceCpp("~/Desktop/C++/SumD_c.cpp")
+  
 
 
 final.result.REHE <- function(par, REHE_results, data0)
@@ -91,8 +95,9 @@ REHE_results <- function(data0)
   # y : the  sum(n) x 1 column vector of response 
   
   library(Rcpp)
-  sourceCpp("~/Desktop/sumS3.cpp")
-  sourceCpp("~/Desktop/SumD_c.cpp")
+  # Access the C++ Code:
+  sourceCpp("~/Desktop/C++/sumS3.cpp")
+  sourceCpp("~/Desktop/C++/SumD_c.cpp")
   
   G = data0$G
   t = data0$t
