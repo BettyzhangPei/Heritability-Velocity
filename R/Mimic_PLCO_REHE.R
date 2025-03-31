@@ -9,7 +9,7 @@ library(Rcpp)
   
 
 
-final.result.REHE <- function(par, REHE_results, data0)
+final.result.REHE <- function(REHE_results, data0)
 {
   # par: unknown parameters = (beta0, beta1, var.g, var.g*, var.b0, var.b1, var.e)
   # REHE_results: function to implement the REHE method to obtain the estimates of par
@@ -548,5 +548,5 @@ generate_data <- function(a=1,P, P0, N, J, theta, beta) {
 # data0 <- generate_data(a=1,P = P, P0 = P0, N = N, J = J, theta, beta)
 # print(REHE_results(data0))
 # 
-# print(final.result.REHE(par, REHE_results, data0))
+# print(final.result.REHE(REHE_results, data0))
 
