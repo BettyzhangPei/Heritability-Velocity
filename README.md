@@ -15,13 +15,17 @@ Building on the proposed mixed model with jointly individual-level genetic effec
 
 
 # Usage Examples
-For real data analysis under small-to-moderate studies via AI-ReML algorithm,  we use `Mimic_Small_Moderate_PLCO_genetic_information.R`. Among `Mimic_Small_Moderate_PLCO_genetic_information.R`: 
+For real data analysis under small-to-moderate studies via AI-ReML algorithm,  we use `Mimic_PLCO_AI_REML_Small-to_Moderate.R`. Among `Mimic_PLCO_AI_REML_Small-to_Moderate.R`: 
 - `generate_data` function
 - `generate_information` function
 - `final.result.AI.ReML` function
 The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
 The `generate_information` function provides a list of obaserved data and required matrices: G, t, n, y, H, A. 
 The `final.result.AI.ReML` function provides estimates for variance components, two heritability metrics and their variances in a linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset.
+For real data analysis using REHE method, we use `Mimic_PLCO_REHE.R`. Among `Mimic_PLCO_REHE.R`:
+- `generate_data` function
+- `final.result.REHE` function
+The `final.result.REHE` function provides estimates for variance components, two heritability metrics and their estimated empirical standard errors and scaled median absolute deviations (MAD), using parametric bootstrapping approach,  in the linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via REHE method based on inputed dataset.
 For instance: 
 ```r
 ###################################################################################################################
@@ -44,10 +48,10 @@ beta = c(-0.2118, 0.8415)
 data0 <- generate_data(a=1,P = P, P0 = P0, N = N, J = J, theta, beta)
 ####################################################################################################################
 
-################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y ##################
+################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y using AI-REML algorithm under small-to-moderate studies##################
 # call function to obtain information G, t, n, y, H, A, and matrices A and H based on known n, G, t, y
 data = generate_information(n = data0$n, G = data0$G, G0 = data0$G0,  t= data0$t, y=data0$y)
-# Perform AI-ReML algorithm for estimation of unknown variance parameters, two heritability metrics and their standard errors 
+# Perform AI-ReML algorithm for estimation of unknown variance parameters, two heritability metrics and their variances
 # For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm. For instance, innitial.par = theta
 # Call function to obtain estimated variance components, two heritability metrics and their variances. 
 final_result_AI_ReML <- final.result.AI.ReML(initial.par=theta, data, AI_ReML, f_V, AI_DL)
@@ -55,6 +59,17 @@ print(final_result_AI_ReML)
 # Estimated variance components (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e) and their variances
 # Estimated two heritability metrics and their variances
 ####################################################################################################################
+
+
+################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y using REHE method ##################
+# Perform REHE method for estimation of unknown variance parameters, two heritability metrics and their standard errors, including empirical standard errors and scaled MAD.
+# For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm. For instance, innitial.par = theta
+# Call function to obtain estimated variance components, two heritability metrics and their variances.
+final_result_REHE <- final.result.REHE(REHE_results, data0)
+print(final_result_REHE)
+####################################################################################################################
+
+
 ```
 where data0 has to be structured as a list of vectors n, G, G0, t, y. 
 - n: A N x 1 column vector represents total number of measurements for each subject. 
