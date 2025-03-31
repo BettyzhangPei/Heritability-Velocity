@@ -87,7 +87,7 @@ final.result.AI.ReML <- function(initial.par, data, AI_ReML, f_V, AI_DL)
   
   df = round(df, 3)
   
-  df <- data.frame(df)
+  df <- data.frame(value = df)
   
   # Set custom column names
   rownames(df) <- c("var.g", "var.g*", "var.b0", "var.b1", "var.e", 
