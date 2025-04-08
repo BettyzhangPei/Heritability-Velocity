@@ -86,6 +86,45 @@ Moreover, data will to be structured as a list of vectors and matrices G, t, n, 
 - H: composite matrix for AI matrix and DL matrix in the iteration process of AI-ReML algorithm.
 - A: A sum(n) x 2 covariate matrix for fixed effects
 
+
+For real data analysis under large-scale studies, we randmly divide the whole sample into several evenly subgroups and then implement AI-REML algorithm for each subgroup. For truncated estimates for some parameters, we propose the truncation adjusted meta-analysis. Specifically, for left-truncated variance components on the slope, we utilize the left-truncation adjustment meta-analysis while we adopt the doubly truncated meta-analysis for velocity heritability.  We use `Mimic_PLCO_AI_REML_Large-Scale.R` to achieve these process. Among `Mimic_PLCO_AI_REML_Large-Scale.R`: 
+- `generate_data` function
+- `Generate_information` function
+- `Final.result.AI.ReML` function
+The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
+The `Generate_information` function provides a list of obaserved data and required matrices: G, t, n, y, H, A for each subsample. 
+The `Final.result.AI.ReML` function provides estimates for variance components, two heritability metrics and their variances in a linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset.
+For real data analysis using REHE method, we use `Mimic_PLCO_REHE.R`. Among `Mimic_PLCO_REHE.R`:
+- `generate_data` function
+- `final.result.REHE` function
+The `final.result.REHE` function provides estimates for variance components, two heritability metrics and their estimated empirical standard errors and scaled median absolute deviations (MAD), using parametric bootstrapping approach,  in the linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via REHE method based on inputed dataset.
+For instance: 
+```r
+###################################################################################################################
+# Set a specific seed for reproducibility
+set.seed(1)
+# Define number of genome-wide common variants, number of causal variants, sample size etc.
+#  P represents the number of genome-wide common variants
+P <- 10000
+# P0 represents the number of causal variants
+P0 <- 1000
+#  N denotes the number of subjects
+N <- 15260
+#  J denotes maximum of expected measurements per subjects among N subjects
+J <- 6
+# theta: column vector of variance components = (sigma^2_g, sigma^2_g*, sigma^2_b0, sigma^2_b1, sigma^2_e)
+theta = c(2, 2, 2, 2, 0.1)
+# beta: coefficients of fixed effects (beta_0 and beta_1)
+beta = c(-0.2118, 0.8415)
+# Call function to generate data0 with a list of vectors: n, G, G0, t, y.
+Data <- generate_data(P = P, P0 = P0, N = N, J = J, theta, beta)
+Final_results = Final.result.AI.ReML(initial.par=theta, parts=5, part.result.AI.ReML=part.result.AI.ReML, Data=Data)
+print(Final_results)
+# Call function to obtain estimated variance components, two heritability metrics and their variances.
+final_result_REHE <- final.result.REHE(REHE_results, Data)
+print(final_result_REHE)
+```
+
 # Usage Notes
 1. We recommend transforming response (e.g., using a log transformation) to approximate a normal distribution before applying our functions.
 2. We recommend transforming time variable (e.g., the temporal effect t is defined using approximately min-max normalization based on age in years to
