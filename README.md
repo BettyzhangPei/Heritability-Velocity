@@ -63,7 +63,6 @@ print(final_result_AI_ReML)
 
 ################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y using REHE method ##################
 # Perform REHE method for estimation of unknown variance parameters, two heritability metrics and their standard errors, including empirical standard errors and scaled MAD.
-# For instance, we choose an arbitrary input for unknown variance components for AI-ReML algorithm. For instance, innitial.par = theta
 # Call function to obtain estimated variance components, two heritability metrics and their variances.
 final_result_REHE <- final.result.REHE(REHE_results, data0)
 print(final_result_REHE)
@@ -120,6 +119,10 @@ beta = c(-0.2118, 0.8415)
 Data <- generate_data(P = P, P0 = P0, N = N, J = J, theta, beta)
 Final_results = Final.result.AI.ReML(initial.par=theta, parts=5, part.result.AI.ReML=part.result.AI.ReML, Data=Data)
 print(Final_results)
+
+
+################### For real data analysis with known data0 as a list of column vectors n, G, G0, t, y using REHE method ##################
+# Perform REHE method for estimation of unknown variance parameters, two heritability metrics and their standard errors, including empirical standard errors and scaled MAD.
 # Call function to obtain estimated variance components, two heritability metrics and their variances.
 final_result_REHE <- final.result.REHE(REHE_results, Data)
 print(final_result_REHE)
