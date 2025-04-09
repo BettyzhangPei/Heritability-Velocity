@@ -130,11 +130,9 @@ print(final_result_REHE)
 
 # Usage Notes
 1. We recommend transforming response (e.g., using a log transformation) to approximate a normal distribution before applying our functions.
-2. We recommend transforming time variable (e.g., the temporal effect t is defined using approximately min-max normalization based on age in years to
-scale its range between 0 and 1. In specific, time variable is calculated as the age at each screening visit, adjusted by subtracting
+2. We recommend transforming time variable (e.g., the temporal effect t is defined to scale its range between 0 and 1. In specific, time variable is calculated as the age at each screening visit, adjusted by subtracting
 54 and dividing by 30 for serial prostate-specific antigen datasets from PLCO among prostate-cancer free males) to control the scale of time variable before applying our functions. 
 3. Our calculations assume that there is unbalanced longitudinal data structure.
-4. For `sim_I_REHE_N_2000.R`, `sim_I_AI_REML_N_2000.R`, `sim_I_REHE_N_15260.R`, and `sim_I_AI_REML_N_15260.R`, both of them are for simulation studies for a specific scenario with 1,000 repetitions, we conducted them on Biowulf by setting value of a from 1 to 1000.  
    
 # References
 Lynch, Michael and Walsh, Bruce (1998) Genetics and analysis of quantitative traits. Sinauer Sunderland. 
