@@ -22,6 +22,7 @@ For real data analysis under small-to-moderate studies via AI-ReML algorithm,  w
 The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
 The `generate_information` function provides a list of obaserved data and required matrices: G, t, n, y, H, A. 
 The `final.result.AI.ReML` function provides estimates for variance components, two heritability metrics and their variances in a linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset.
+
 For real data analysis using REHE method, we use `Mimic_PLCO_REHE.R`. Among `Mimic_PLCO_REHE.R`:
 - `generate_data` function
 - `final.result.REHE` function
@@ -93,6 +94,7 @@ For real data analysis under large-scale studies, we randmly divide the whole sa
 The `generate_data` function mimic the PLCO datasets to provide a list of observed data: n, G, G0, t, and y.
 The `Generate_information` function provides a list of obaserved data and required matrices: G, t, n, y, H, A for each subsample. 
 The `Final.result.AI.ReML` function provides estimates for variance components, two heritability metrics and their variances in a linear mixed model by integrating joint overall genetic contributions on both baseline and slope in a longitudinal phenotype via AI-ReML algorithm based on inputed dataset.
+
 For real data analysis using REHE method, we use `Mimic_PLCO_REHE.R`. Among `Mimic_PLCO_REHE.R`:
 - `generate_data` function
 - `final.result.REHE` function
