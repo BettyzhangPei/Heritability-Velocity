@@ -82,8 +82,7 @@ Final.result.AI.ReML <- function(initial.par, parts, part.result.AI.ReML, Data)
 
 
 
-####################################################################################################
-##### 1. Meta-analysis for left-truncated values 
+
 ####################################################################################################
 ##### 1. Meta-analysis for left-truncated values 
 left.truncation.meta.analysis <- function(X, sd, tol=1e-6)
@@ -211,139 +210,177 @@ left.truncation.meta.analysis <- function(X, sd, tol=1e-6)
 ####################################################################################################
 
 
+
 ####################################################################################################
 ##### 1. Meta-analysis for doubly truncated values 
 doubly.truncation.meta.analysis <- function(X, sd, tol=1e-4)
 {
-  
-  # Objective function: negative log likelihood to be minimized in further optim function
-  objective <- function(par, X, sd) 
-  {
-    # par : mean of the normal distribution to be estimated
-    # sd: standard deviation of the normal distribution
-    # X: random variables from a normal distribution
-    
-    # Total number of elements in the vector X with random variables
-    n <- length(X)
-    
-    # Truncated values
-    X_trun_1 <- X[which(X <= tol)]
-    X_trun_2 <- X[which(X >1-tol)]
-    X_trun <- union(X_trun_1, X_trun_2)
-    
-    # Probability of X less than tol
-    s00 <- which(X <=tol)
+   
+    #### Doubly truncated normal distribution for lambda_2:
+# Objective function: negative log likelihood to be minimized in further optim function
+objective1 <- function(par, X, sd) {
+  # par : mean of the normal distribution to be estimated
+  # sd: standard deviation of the normal distribution
+  # X: random variables from a normal distribution
+
+  # Total number of elements in the vector X with random variables
+  n <- length(X)
+
+
+
+  # Probability of X less than 0
+  s00 <- which(X < tol)
+  if (length(s00) > 0) {
     sd_trun0 <- sd[s00]
     p0 <- pnorm(-par / sd_trun0)
     p0[p0 == 0] <- .Machine$double.eps  # Avoid log(0)
-    
-    # Probability of X more than 1-tol
-    s1 <- which(X > 1-tol)
-    sd_trun1 <- sd[s1]
-    p1 <- 1 - pnorm((1 - par) / sd[s1])
-    p1[p1 == 0] <- .Machine$double.eps  # Avoid log(0)
-    
-    # Remove the subset (with truncated values from 0 to 1) from the whole set
-    X_rest <- setdiff(X, X_trun)
-    
-    # Log likelihood calculation for non-truncated values
-    s0 <- 0
-    for (i in 1:length(X_rest)) {
-      density_value <- dnorm((X_rest[i] - par) / sd[i], log = TRUE)
-      if (is.infinite(density_value)) {
-        density_value <- -Inf  # Handle potential -Inf from log(0)
-      }
-      s0 <- s0 + density_value
-    }
-    
-    s <- which(X > tol & X <=1-tol)
-    
-    # Log likelihood function
-    l <- sum(log(p0)) + sum(log(p1)) + sum(-log(sd[s])) + s0
-    
-    # Return negative log likelihood to be minimized for MLE
-    return(-l)
+    log_p0 <- sum(log(p0))
+  } else {
+    log_p0 <- 0  # No values less than 1e-4, so contribution is zero
   }
-  
-  
-  # Function to obtain the estimated mu and information related to convergence
-  f <- function(objective, X, sd) {
-    # objective: a function to characterize the negative log likelihood
-    # n: sample size
-    # sd: true value of standard deviation in the same normal distribution
-    
-    # Choose a random continuous value between mu - 1.96 * sd and mu + 1.96 * sd
-    initial.mu <- runif(1, min = 0, max = 1)
-    
-    # Define the lower and upper bounds for the "L-BFGS-B" method
-    lower_bound <- 0
-    upper_bound <- 1
-    
-    # Optim function to obtain the MLE for mu
-    result <- optim(par = initial.mu, fn = objective, X = X, sd = sd,
-                    method = "L-BFGS-B", lower = lower_bound, upper = upper_bound)
-    
-    est.mu <- result$par
-    conver <- result$convergence
-    
-    df <- rep(0, 2)
-    df[1] <- est.mu
-    df[2] <- conver
-    
-    # Return estimated mu and the related value to indicate convergence
-    return(df)
-  }
-  
 
-  # Second derivative for log likelihood: 
-  l_2 <- function(par, X, sd)
+  # Probability of X more than 1
+  s1 <- which(X > 0.98)
+  if (length(s1) > 0) {
+    sd_trun1 <- sd[s1]
+    p1 <- 1 - pnorm((1 - par) / sd_trun1)
+    p1[p1 == 0] <- .Machine$double.eps  # Avoid log(0)
+    log_p1 <- sum(log(p1))
+  } else {
+    log_p1 <- 0  # No values more than 0.98, so contribution is zero
+  }
+
+  # Remove the subset (with truncated values from 0 to 1) from the whole set
+  X_rest <- X[X >= tol & X <= 0.98]
+
+  # Log likelihood calculation for non-truncated values
+  s0 <- 0
+  if(length(X_rest) > 0 ){
+  for (i in 1:length(X_rest)) {
+    density_value <- dnorm((X_rest[i] - par) / sd[i], log = TRUE)
+     # if (is.infinite(density_value)) {
+     #   density_value <- -Inf  # Handle potential -Inf from log(0)
+     # }
+    s0 <- s0 + density_value
+    }
+  }
+
+  s <- which(X > tol & X < 0.98)
+  log_sd <- if (length(s) > 0) sum(-log(sd[s])) else 0  # Avoids errors if s is empty
+  
+  
+  ## Log likelihood function
+  # l <- sum(log(p0)) + sum(log(p1)) + sum(-log(sd[s])) + s0
+  l <- log_p0 + log_p1 + log_sd + s0
+  
+  # Return negative log likelihood to be minimized for MLE
+  return(-l)
+}
+
+
+
+# Function to obtain the estimated mu and information related to convergence
+f2 <- function(objective, X, sd) {
+  # objective: a function to characterize the negative log likelihood
+  # n: sample size
+  # sd: true value of standard deviation in the same normal distribution
+
+  # Choose a random continuous value between mu - 1.96 * sd and mu + 1.96 * sd
+  initial.mu <- runif(1, min = 0, max = 1)
+
+  # Define the lower and upper bounds for the "L-BFGS-B" method
+  lower_bound <- 0
+  upper_bound <- 1
+
+  # Optim function to obtain the MLE for mu
+  result <- optim(par = initial.mu, fn = objective, X = X, sd = sd,
+                  method = "L-BFGS-B", lower = lower_bound, upper = upper_bound)
+
+  est.mu <- result$par
+  conver <- result$convergence
+
+  df <- rep(0, 2)
+  df[1] <- est.mu
+  df[2] <- conver
+
+  # Return estimated mu and the related value to indicate convergence
+  return(df)
+}
+
+
+
+
+
+# second derivative for log likelihood related to doubly-truncated meta analysis for ratio2:
+l_2_lambda <- function(par, sd, X)
+{
+
+
+  # Total number of elements in the vector X with random variables
+  n <- length(X)
+
+  # Probability of X less than 0
+  s00 <- which(X < 1e-4)
+  if(length(s00) > 0)
   {
-    
-    
-    # Total number of elements in the vector X with random variables
-    n <- length(X)
-    
-    
-    
-    # Probability of X no more than tol
-    s00 <- which(X <= tol)
     sd_trun0 <- sd[s00]
     z0 = -par / sd_trun0
-    p0 <- pnorm(z0)
+    p0 = pnorm(z0)
     p00 = dnorm(z0)
     p0[p0 == 0] <- .Machine$double.eps  # Avoid log(0)
-    
-    
-    
-    # Probability of X more than 1
-    s1 <- which(X > 1-tol)
+    term1 =  sum( ( (z0)* p00*p0  -  p00^2   ) / (p0*sd_trun0)^2  ) }
+   else{term1=0}
+
+  # Probability of X more than 1
+  s1 <- which(X > 0.98)
+  if(length(s1) >0)
+  {
     sd_trun1 <- sd[s1]
     p1 <- 1 - pnorm((1 - par) / sd[s1])
     p11 = dnorm((1 - par) / sd[s1] )
     p1[p1 == 0] <- .Machine$double.eps  # Avoid log(0)
-    
-    
-    s <- which(X > tol & X <= 1-tol)
-    
-    
-    # second derivative for log likelihood: 
-    l2 <- - sum( ( z0* p00*p0  + p00^2   ) / (p0*sd_trun0)^2  ) 
-    + sum(  (p11^2 -  ((1 - par) / sd[s1])* p11*p1  ) / (p1*sd_trun1)^2  )  
-    -    sum(1/(sd[s]^2))
-    
-    var = -1/l2
-    
+    term2 = sum((p11^2 - ((1 - par) / sd_trun1) * p11 * p1) / (p1 * sd_trun1)^2, na.rm = TRUE)
+  }else{term2=0}
+  
+  s <- which(X > 1e-4 & X < 0.98)
+  if (length(s) > 0)
+  {
+    term3 <- - sum(1 / (sd[s]^2), na.rm = TRUE)
+  }else{term3 =0}
+  
+  
+  
+  ## second derivative for log likelihood:
+  # l2 <- -sum( ( (-par/sd_trun0)* p00*p0  + p00^2   ) / (p0*sd_trun0)^2  )
+  # + sum(  (p11^2 -  ((1 - par) / sd[s1])* p11*p1  ) / (p1*sd_trun1)^2  )
+  # - sum(1/(sd[s]^2))
+  l2 = term1 + term2 + term3
+
+  # Handle NA or infinite case for the second derivative: 
+    if (is.nan(l2) || is.infinite(l2)) {
+      warning("Warning:  the second derivative of likelihood function is NA or infinite ")
+        return(NA)  # Return NA for invalid or unstable values
+    }
+  # Handle non-negative for the second derivative:
+    if(l2 >= 0) 
+    { 
+       warning("Warning: the second derivative of likelihood function is non-negative, implying that is convex at the estimated parameter value.")
+        return(NA)  # Return NA for invalid or unstable values
+    }
+  
+  
+    # Calculate the variance as the negative inverse of l2
+    var <- -1 / l2
     return(var)
+}
+  
+    result = f2(objective1, X, sd)
     
-  } 
-  
-  result = f(objective, X, sd)
-  
-  est.sd = sqrt(l_2(result[1], X, sd))
-  
-  # Estimated mu using the doubly truncated meta-analysis approach:
-  return(list(est.mu = result[1], convergence= result[2],  est.sd = est.sd))
-  
+    est.sd = sqrt(l_2_lambda(result[1], sd,X))
+    
+    # Estimated mu using the doubly truncated meta-analysis approach:
+    return(list(est.mu = result[1], convergence= result[2],  est.sd = est.sd))
+
 }
 #########################################################################################################
 #########################################################################################################
