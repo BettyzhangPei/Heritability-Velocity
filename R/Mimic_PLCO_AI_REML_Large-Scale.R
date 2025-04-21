@@ -308,9 +308,9 @@ doubly.truncation.meta.analysis <- function(X, sd, tol=1e-4)
     # Probability of X no more than tol
     s00 <- which(X <= tol)
     sd_trun0 <- sd[s00]
-    
-    p0 <- pnorm(-par / sd_trun0)
-    p00 = dnorm(-par / sd_trun0)
+    z0 = -par / sd_trun0
+    p0 <- pnorm(z0)
+    p00 = dnorm(z0)
     p0[p0 == 0] <- .Machine$double.eps  # Avoid log(0)
     
     
@@ -327,7 +327,7 @@ doubly.truncation.meta.analysis <- function(X, sd, tol=1e-4)
     
     
     # second derivative for log likelihood: 
-    l2 <- sum( ( (-par/sd_trun0)* p00*p0  - p00^2   ) / (p0*sd_trun0)^2  ) 
+    l2 <- - sum( ( z0* p00*p0  + p00^2   ) / (p0*sd_trun0)^2  ) 
     + sum(  (p11^2 -  ((1 - par) / sd[s1])* p11*p1  ) / (p1*sd_trun1)^2  )  
     -    sum(1/(sd[s]^2))
     
