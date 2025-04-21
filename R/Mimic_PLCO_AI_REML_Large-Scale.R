@@ -328,7 +328,7 @@ l_2_lambda <- function(par, sd, X)
     p0 = pnorm(z0)
     p00 = dnorm(z0)
     p0[p0 == 0] <- .Machine$double.eps  # Avoid log(0)
-    term1 =  - sum( (z0* p00*p0  +  p00^2 ) / (p0*sd_trun0)^2  ) }
+    term1 =   sum( (z0* p00*p0  -  p00^2 ) / (p0*sd_trun0)^2  ) }
    else{term1=0}
 
   # Probability of X more than 1
