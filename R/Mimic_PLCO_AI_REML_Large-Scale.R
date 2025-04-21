@@ -213,7 +213,7 @@ left.truncation.meta.analysis <- function(X, sd, tol=1e-6)
 
 ####################################################################################################
 ##### 1. Meta-analysis for doubly truncated values 
-doubly.truncation.meta.analysis <- function(X, sd, tol=1e-4)
+doubly.truncation.meta.analysis <- function(X, sd, tol=1e-6)
 {
    
     #### Doubly truncated normal distribution for lambda_2:
@@ -240,7 +240,7 @@ objective1 <- function(par, X, sd) {
   }
 
   # Probability of X more than 1
-  s1 <- which(X > 0.98)
+  s1 <- which(X > 0.99)
   if (length(s1) > 0) {
     sd_trun1 <- sd[s1]
     p1 <- 1 - pnorm((1 - par) / sd_trun1)
@@ -251,7 +251,7 @@ objective1 <- function(par, X, sd) {
   }
 
   # Remove the subset (with truncated values from 0 to 1) from the whole set
-  X_rest <- X[X >= tol & X <= 0.98]
+  X_rest <- X[X >= tol & X <= 0.99]
 
   # Log likelihood calculation for non-truncated values
   s0 <- 0
@@ -265,7 +265,7 @@ objective1 <- function(par, X, sd) {
     }
   }
 
-  s <- which(X > tol & X < 0.98)
+  s <- which(X > tol & X < 0.99)
   log_sd <- if (length(s) > 0) sum(-log(sd[s])) else 0  # Avoids errors if s is empty
   
   
@@ -320,7 +320,7 @@ l_2_lambda <- function(par, sd, X)
   n <- length(X)
 
   # Probability of X less than 0
-  s00 <- which(X < 1e-4)
+  s00 <- which(X < tol)
   if(length(s00) > 0)
   {
     sd_trun0 <- sd[s00]
@@ -332,7 +332,7 @@ l_2_lambda <- function(par, sd, X)
    else{term1=0}
 
   # Probability of X more than 1
-  s1 <- which(X > 0.98)
+  s1 <- which(X > 0.99)
   if(length(s1) >0)
   {
     sd_trun1 <- sd[s1]
@@ -342,7 +342,7 @@ l_2_lambda <- function(par, sd, X)
     term2 = sum((p11^2 - ((1 - par) / sd_trun1) * p11 * p1) / (p1 * sd_trun1)^2, na.rm = TRUE)
   }else{term2=0}
   
-  s <- which(X > 1e-4 & X < 0.98)
+  s <- which(X > tol & X < 0.99)
   if (length(s) > 0)
   {
     term3 <- - sum(1 / (sd[s]^2), na.rm = TRUE)
