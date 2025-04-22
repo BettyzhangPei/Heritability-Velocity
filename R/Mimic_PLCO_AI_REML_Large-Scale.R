@@ -216,9 +216,8 @@ left.truncation.meta.analysis <- function(X, sd, tol=1e-6)
 doubly.truncation.meta.analysis <- function(X, sd, tol=1e-6)
 {
    
-    #### Doubly truncated normal distribution for lambda_2:
-# Objective function: negative log likelihood to be minimized in further optim function
-objective1 <- function(par, X, sd) {
+  # Objective function: negative log likelihood to be minimized in further optim function
+  objective1 <- function(par, X, sd) {
   # par : mean of the normal distribution to be estimated
   # sd: standard deviation of the normal distribution
   # X: random variables from a normal distribution
@@ -229,7 +228,7 @@ objective1 <- function(par, X, sd) {
 
 
   # Probability of X less than 0
-  s00 <- which(X < tol)
+  s00 <- which(X <= tol)
   if (length(s00) > 0) {
     sd_trun0 <- sd[s00]
     p0 <- pnorm(-par / sd_trun0)
@@ -251,7 +250,7 @@ objective1 <- function(par, X, sd) {
   }
 
   # Remove the subset (with truncated values from 0 to 1) from the whole set
-  X_rest <- X[X >= tol & X <= 0.99]
+  X_rest <- X[X > tol & X <= 0.99]
 
   # Log likelihood calculation for non-truncated values
   s0 <- 0
@@ -265,7 +264,7 @@ objective1 <- function(par, X, sd) {
     }
   }
 
-  s <- which(X > tol & X < 0.99)
+  s <- which(X > tol & X <= 0.99)
   log_sd <- if (length(s) > 0) sum(-log(sd[s])) else 0  # Avoids errors if s is empty
   
   
@@ -279,8 +278,8 @@ objective1 <- function(par, X, sd) {
 
 
 
-# Function to obtain the estimated mu and information related to convergence
-f2 <- function(objective, X, sd) {
+  # Function to obtain the estimated mu and information related to convergence
+  f2 <- function(objective, X, sd) {
   # objective: a function to characterize the negative log likelihood
   # n: sample size
   # sd: true value of standard deviation in the same normal distribution
@@ -320,7 +319,7 @@ l_2_lambda <- function(par, sd, X)
   n <- length(X)
 
   # Probability of X less than 0
-  s00 <- which(X < tol)
+  s00 <- which(X <= tol)
   if(length(s00) > 0)
   {
     sd_trun0 <- sd[s00]
@@ -328,8 +327,8 @@ l_2_lambda <- function(par, sd, X)
     p0 = pnorm(z0)
     p00 = dnorm(z0)
     p0[p0 == 0] <- .Machine$double.eps  # Avoid log(0)
-    term1 =   sum( (z0* p00*p0  -  p00^2 ) / (p0*sd_trun0)^2  ) }
-   else{term1=0}
+    term1 =   - sum( (z0* p00*p0  +  p00^2 ) / (p0*sd_trun0)^2  ) 
+  }else{term1=0}
 
   # Probability of X more than 1
   s1 <- which(X > 0.99)
@@ -342,7 +341,7 @@ l_2_lambda <- function(par, sd, X)
     term2 = sum((p11^2 - ((1 - par) / sd_trun1) * p11 * p1) / (p1 * sd_trun1)^2, na.rm = TRUE)
   }else{term2=0}
   
-  s <- which(X > tol & X < 0.99)
+  s <- which(X > tol & X <= 0.99)
   if (length(s) > 0)
   {
     term3 <- - sum(1 / (sd[s]^2), na.rm = TRUE)
@@ -350,8 +349,8 @@ l_2_lambda <- function(par, sd, X)
   
   
   
-  ## second derivative for log likelihood:
-  # l2 <- -sum( ( (-par/sd_trun0)* p00*p0  + p00^2   ) / (p0*sd_trun0)^2  )
+  ## second derivative of log likelihood for mu:
+  # l2 <- - sum( ( (-par/sd_trun0)* p00*p0  + p00^2   ) / (p0*sd_trun0)^2  )
   # + sum(  (p11^2 -  ((1 - par) / sd[s1])* p11*p1  ) / (p1*sd_trun1)^2  )
   # - sum(1/(sd[s]^2))
   l2 = term1 + term2 + term3
@@ -365,12 +364,13 @@ l_2_lambda <- function(par, sd, X)
     if(l2 >= 0) 
     { 
        warning("Warning: the second derivative of likelihood function is non-negative, implying that is convex at the estimated parameter value.")
-        return(NA)  # Return NA for invalid or unstable values
+       return(NA)  # Return NA for invalid or unstable values
     }
   
   
     # Calculate the variance as the negative inverse of l2
     var <- -1 / l2
+  
     return(var)
 }
   
