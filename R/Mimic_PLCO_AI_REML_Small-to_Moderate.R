@@ -137,7 +137,8 @@ AI_ReML<- function(par, l_REML, maxit, maxtol, data, f_V, AI_DL)
   A = data$A
   
   
-  
+  # Estimated variance of phenotypic values
+  var.ph = as.numeric(sd(y)^2)
   
   
   # Assuming 'par' is a vector and n0 is its length
@@ -152,7 +153,7 @@ AI_ReML<- function(par, l_REML, maxit, maxtol, data, f_V, AI_DL)
     AD <- AI_DL(par, data, f_V)
     new_par <- par - solve(AD$AI) %*% AD$DL
     # Ensure parameters are non-negative
-    new_par <- pmax(new_par, 1e-6)  # ensure positivity 
+    new_par <- pmax(new_par, var.ph*(1e-6))  # ensure positivity 
     return(new_par)
   }
   
