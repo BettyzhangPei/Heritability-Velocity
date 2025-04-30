@@ -360,18 +360,23 @@ l_2_lambda <- function(par, sd, X)
       warning("Warning:  the second derivative of likelihood function is NA or infinite ")
         return(NA)  # Return NA for invalid or unstable values
     }
-  # Handle non-negative for the second derivative:
-    if(l2 >= 0) 
-    { 
-       warning("Warning: the second derivative of likelihood function is non-negative, implying that is convex at the estimated parameter value.")
-       return(NA)  # Return NA for invalid or unstable values
-    }
+
+   if (l2 < 0)
+   {  
+     # Calculate the variance as the negative inverse of l2
+     var =  -1 / l2
+   }else
+   { 
+     # Handle non-negative for the second derivative:
+     # warning("Warning: the second derivative of likelihood function is non-negative, implying that is convex at the estimated parameter value.")
+     # return(NA)  # Return NA for invalid or unstable values
+
+     # simpler way to obtain the estimated variance of est.mu:
+     var = sum(sd^2)/length(sd)
+   }
   
+  return(var)
   
-    # Calculate the variance as the negative inverse of l2
-    var <- -1 / l2
-  
-    return(var)
 }
   
     result = f2(objective1, X, sd)
