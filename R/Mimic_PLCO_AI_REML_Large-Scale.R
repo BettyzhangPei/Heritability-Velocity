@@ -327,7 +327,7 @@ l_2_lambda <- function(par, sd, X)
     p0 = pnorm(z0)
     p00 = dnorm(z0)
     p0[p0 == 0] <- .Machine$double.eps  # Avoid log(0)
-    term1 =   - sum( (z0* p00*p0  +  p00^2 ) / (p0*sd_trun0)^2  ) 
+    term1 =    sum( (z0* p00*p0  -  p00^2 ) / (p0*sd_trun0)^2  ) 
   }else{term1=0}
 
   # Probability of X more than 1
@@ -350,7 +350,7 @@ l_2_lambda <- function(par, sd, X)
   
   
   ## second derivative of log likelihood for mu:
-  # l2 <- - sum( ( (-par/sd_trun0)* p00*p0  + p00^2   ) / (p0*sd_trun0)^2  )
+  # l2 <-  sum( ( (-par/sd_trun0)* p00*p0  - p00^2   ) / (p0*sd_trun0)^2  )
   # + sum(  (p11^2 -  ((1 - par) / sd[s1])* p11*p1  ) / (p1*sd_trun1)^2  )
   # - sum(1/(sd[s]^2))
   l2 = term1 + term2 + term3
