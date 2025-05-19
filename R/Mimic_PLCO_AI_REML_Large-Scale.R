@@ -624,20 +624,45 @@ AI_ReML<- function(par, l_REML, maxit, maxtol, data, f_V, AI_DL)
 
 
 # function for computing covariance matrix  V  
-f_V <- function(par, H, n)
-{
-  
-  
-  H1 =  H[1: sum(n), ] 
-  H2 =  H[(sum(n) + 1): (2*sum(n)), ] 
-  H3 =  H[ (2*sum(n) + 1): (3*sum(n)), ] 
-  H4 =  H[ (3*sum(n) + 1): (4*sum(n)), ]
-  H5 =  H[ (4*sum(n) + 1): (5*sum(n)), ] 
-  
-  V = par[1]*H1 + par[2]*H2 + par[3]*H3 + par[4]*H4 + par[5]*H5
-  
-  return(V)
-}
+# f_V <- function(par, H, n)
+# {
+  # H1 =  H[1: sum(n), ] 
+  # H2 =  H[(sum(n) + 1): (2*sum(n)), ] 
+  # H3 =  H[ (2*sum(n) + 1): (3*sum(n)), ] 
+  # H4 =  H[ (3*sum(n) + 1): (4*sum(n)), ]
+  # H5 =  H[ (4*sum(n) + 1): (5*sum(n)), ] 
+  # V = par[1]*H1 + par[2]*H2 + par[3]*H3 + par[4]*H4 + par[5]*H5
+  #  return(V)
+# }
+
+
+# Function for computing covariance matrix  V  
+  f_V <- function(par, H, n)
+  {
+    
+    K = length(par)
+    
+    V= matrix(0, nrow= sum(n), ncol=sum(n))
+    
+    for (i in 1:K)
+    { 
+      H_temp =   H[ ((i-1)*sum(n) + 1): (i*sum(n)), ] 
+    
+      V = V+ par[i]* H_temp 
+    }
+    
+    return(V)
+    
+  }
+
+
+
+
+
+
+
+
+
 
 
 
